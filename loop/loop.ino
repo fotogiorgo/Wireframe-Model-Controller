@@ -22,22 +22,8 @@ float     kalmanAngleRoll = 0,                   //starting guess of 0 degrees
               kalmanUncertaintyAngleRoll = 2*2; //starting uncertainty of 2 degrees
 float     kalmanAnglePitch = 0,
               kalmanUncertaintyAnglePitch = 2*2;
-//output of the filter {prediction, uncertainty}
 
 float     package[2];
-
-
-/* void  Kalman1D( float kalmanState, float kalmanUncertainty, 
-                float kalmanInput, float kalmanMeasurement)
-{
-  kalmanState = kalmanState + 0.004*kalmanInput;
-  kalmanUncertainty = kalmanUncertainty + 0.004 * 0.004 * 4 * 4;
-  float kalmanGain = kalmanUncertainty * 1 / (1*kalmanUncertainty + 3 * 3);
-  kalmanState = kalmanState + kalmanGain * (kalmanMeasurement - kalmanState);
-  kalmanUncertainty = (1-kalmanGain) * kalmanUncertainty;
-  kalman1DOutput[0] = kalmanState;
-  kalman1DOutput[1] = kalmanUncertainty;
-} */
 
 void  get_gyro_values(void)
 {
@@ -138,27 +124,24 @@ void setup() {
   initAPandUDPserver();
   delay(200);
   calibrateGyro();
+  Serial.println("Waiting for communication.");
+  while(!(udp.parsePacket()));
+  Serial.println("Communication established.");
   //timeStamp = micros();
 }
 
 
 void loop() {
-  int packetSize = udp.parsePacket();
-  while(packetSize){
     timeStamp = micros();
     get_mpu_signals();
     rateRoll -= rateCalibrationRoll;
     ratePitch -= rateCalibrationPitch;
     rateYaw -= rateCalibrationYaw;
 
-    Kalman1D(&kalmanAngleRoll, &kalmanUncertaintyAngleRoll, rateRoll, angleRoll);
-
-    Kalman1D(&kalmanAnglePitch, &kalmanUncertaintyAnglePitch, ratePitch, anglePitch);
-
-/*     Serial.print("Roll = ");
-    Serial.print(kalmanAngleRoll);
-    Serial.print(" Pitch = ");
-    Serial.println(kalmanAnglePitch); */
+    Kalman1D(&kalmanAngleRoll, &kalmanUncertaintyAngleRoll, \
+              rateRoll, angleRoll);
+    Kalman1D(&kalmanAnglePitch, &kalmanUncertaintyAnglePitch, \
+              ratePitch, anglePitch);
 
     package[0] = kalmanAngleRoll;
     package[1] = kalmanAnglePitch;
@@ -167,5 +150,4 @@ void loop() {
     udp.endPacket();
 
     while(micros() - timeStamp < 4000);
-  }
 }
