@@ -1,7 +1,14 @@
 #include "mpu6050_utils.h"
 #include <Wire.h>
 
-float     accX, accY, accZ;
+
+float     rateCalibrationRoll = 0; 
+float     rateCalibrationPitch = 0;
+float     rateCalibrationYaw = 0;
+float     angleRoll, anglePitch;
+float     ratePitch, rateYaw, rateRoll;
+
+static float     accX, accY, accZ;
 
 static void  get_gyro_values(void)
 {
