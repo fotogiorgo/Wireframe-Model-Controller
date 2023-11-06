@@ -18,4 +18,4 @@ And lastly, the `Kalman Filter` was chosen to filter out the noise of the sensor
 
 ## Showcase
 
-<video src=".showfiles/video.mp4" controls="controls" width="300">
+<video src="https://github.com/fotogiorgo/Wireframe-Model-Controller/assets/64708883/a68bbc1a-62fb-49c4-9678-5d46486812c6" controls="controls" width="300">
